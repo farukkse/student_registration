@@ -1,3 +1,6 @@
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Security.Cryptography.X509Certificates;
 using static ConsoleExercise.Program;
 
@@ -20,18 +23,89 @@ namespace ConsoleExercise
             
         }
 
+        public class User
+        {
+            public string? KullaniciAdi { get; set; }
+            public string? Sifre { get; set; }
+        }
+
+
+        
         static List<Ogrenci> ogrenciler = new List<Ogrenci>();
         static void Main(string[] args)
         {
-
            
             KayitliOgrencileriGetir();
-           
+            KullaniciGirisiYap();
             MenuyuGoster(true);
         }
 
 
+        
+        //admin girişi verdik. fakat list olarak yapamadım.
+        
+        static void KullaniciGirisiYap()
+        {
+            
+            string kullaniciAdi = "admin";
+            string sifre = "123";
 
+            Console.WriteLine("Lütfen kullanıcı girişinizi yapın.");
+            Console.Write("Kullanıcı Adınız:");
+            string inputKullaniciAdi = Console.ReadLine();
+            Console.Write("Şifre:");
+            string inputSifre = sifreliYaz();
+
+            if (inputKullaniciAdi == kullaniciAdi && inputSifre ==sifre)
+            {
+                Clr();
+                MenuyuGoster(true);
+            }
+            else
+            {
+                //Eğer kullanıcı girişi hatalıysa 2 secenek sunduk.
+
+                Console.WriteLine("Kullanıcı adı veya şifre hatalı lütfen tekrar deneyiniz..");
+
+                Console.WriteLine("Tekrar denemek için (1)");
+                Console.WriteLine("Çıkış yapmak için (2) basın.");
+
+
+                ConsoleKey basilanKarakter = Console.ReadKey().Key;
+
+                switch (basilanKarakter)
+                {
+                    case ConsoleKey.D1:
+                        KullaniciGirisiYap();
+                        break;
+
+                    case ConsoleKey.D2:
+                        Console.Clear();
+                        Console.WriteLine("Hoşçakalın.");
+                        break;
+
+                    default:
+                        
+                        Console.ForegroundColor = ConsoleColor.Red;
+
+                        Console.WriteLine("Hatalı Tuşlama Yaptınız.");
+
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+
+                        Console.WriteLine("Lütfen Tekrar deneyiniz.");
+
+                        Console.ForegroundColor = ConsoleColor.White;
+                        KullaniciGirisiYap();
+
+                        break;
+
+                }
+                
+            }
+
+           
+           
+        }
 
         static void KayitliOgrencileriGetir()
         {
@@ -43,6 +117,7 @@ namespace ConsoleExercise
                 DogumYili=1999,
                 Cinsiyet="erkek",
                 CalisiyorMu=true,
+                TelefonNumarasi="05438014699",
 
                 
             });
@@ -159,7 +234,7 @@ namespace ConsoleExercise
         }
         static void MenuyuGoster(bool selamlamaMesajGoster = false)
         {
-            
+           
 
             if(selamlamaMesajGoster == true)
             {
@@ -246,7 +321,7 @@ namespace ConsoleExercise
             Console.WriteLine("");
             Console.WriteLine("-------------------------------");
             Console.WriteLine("Öğrenci No ile arama yapmak için 'F3'e basın.");
-            Console.WriteLine("Öğrenci No ile arama yapmak için 'F4'e basın.");
+            Console.WriteLine("Öğrenci adı ile arama yapmak için 'F4'e basın.");
             Console.ReadKey();
             Search();
 
@@ -275,7 +350,7 @@ namespace ConsoleExercise
                     break;
 
                     case ConsoleKey.F6:
-
+                    FindName();
                     break;
 
 
@@ -315,51 +390,142 @@ namespace ConsoleExercise
 
             Console.ForegroundColor = ConsoleColor.White;
 
-
+            Console.ReadKey();
+            MenuyuGoster();
 
         }
 
         public static void StudentSearchNameSurname()
         {
-            Console.WriteLine("Öğrenci adı ile  aramak için  F4'e bastın.");
-
-            Console.Write("Öğrenci Adını girin:");
-
-            string ogrenciAd = Console.ReadLine();
-            Ogrenci SearchResult = ogrenciler.Find(x => x.Ad == ogrenciAd);
-
-            Console.WriteLine("");
-            Console.WriteLine("---------------------");
-
-            if (SearchResult != null)
+            for (int i = 0; i < ogrenciler.Count; i++)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
+                int sira = 1 + i;
+                Console.WriteLine(sira + "." + "Öğrenci aşağıdadır.");
+                Ogrenci ogrenci = ogrenciler[i];
 
-                Console.WriteLine("Öğrenci Adı ve Soyadı: {0} {1}", SearchResult.Ad, SearchResult.Soyad);
-                Console.WriteLine("Öğrenci Numarası: {0}", SearchResult.OgrenciNo);
-                Console.WriteLine("Öğrenci Yaşı: {0}", SearchResult.DogumYili);
-                Console.WriteLine("Öğrenci Cinsiyeti: {0}", SearchResult.Cinsiyet);
-                Console.WriteLine("Öğrenci Çalışıyor mu: {0}", SearchResult.CalisiyorMu ? "Evet" : "Hayır");
+
+                Console.WriteLine("Öğrenci adı ile  aramak için  F4'e bastın.");
+
+                Console.Write("Öğrenci Adını girin:");
+
+                string ogrenciAd = Console.ReadLine();
+                Ogrenci SearchResult = ogrenciler.Find(x => x.Ad == ogrenciAd);
 
                 Console.WriteLine("");
                 Console.WriteLine("---------------------");
-            }
-            else
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Aradığın öğrenci bulunmuyor.");
-            }
 
+                if (SearchResult !=null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+
+                    Console.WriteLine("Öğrenci Adı ve Soyadı: {0} {1}", SearchResult.Ad, SearchResult.Soyad);
+                    Console.WriteLine("Öğrenci Numarası: {0}", SearchResult.OgrenciNo);
+                    Console.WriteLine("Öğrenci Yaşı: {0}", SearchResult.DogumYili);
+                    Console.WriteLine("Öğrenci Cinsiyeti: {0}", SearchResult.Cinsiyet);
+                    Console.WriteLine("Öğrenci Çalışıyor mu: {0}", SearchResult.CalisiyorMu ? "Evet" : "Hayır");
+
+                    Console.WriteLine("");
+                    Console.WriteLine("---------------------");
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Aradığın öğrenci bulunmuyor.");
+                }
+            }
             Console.ForegroundColor = ConsoleColor.White;
 
-
+            Console.ReadKey();
+            MenuyuGoster();
         }
         public static void FindName()
            
         {
+            for (int i = 0; i < ogrenciler.Count; i++)
+            {
 
+
+                Console.WriteLine("Arama yapmak istediğiniz yöntemi seçiniz:");
+                Console.WriteLine("*****************************************");
+                Console.WriteLine("İsim veya soy isime göre arama yapmak için: (1)");
+                Console.WriteLine("Öğrenci no'ya göre arama yapmak için: (2)");
+                int input = Convert.ToInt32(Console.ReadLine());
+
+                if (input == 1)
+                {
+                    Console.WriteLine("Lütfen isim veya soyisim giriniz:");
+                    string input1 = Console.ReadLine();
+                    foreach (var item in ogrenciler)
+                    {
+                        if (input1 == item.Ad || input1 == item.Soyad)
+                        {
+
+                            Console.WriteLine("Öğrenci Numarası: " + item.OgrenciNo);
+                            Console.WriteLine("İsim            : " + item.Ad);
+                            Console.WriteLine("Soyisim         : " + item.Soyad);
+                            Console.WriteLine("");
+
+                            Console.WriteLine("-");
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Aradığınız kişi kayıtlı değil.");
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Lütfen öğrenci no giriniz:");
+                    int input2 = Convert.ToInt32(Console.ReadLine());
+                    foreach (var item in ogrenciler)
+                    {
+                        if (input2 == item.OgrenciNo)
+                        {
+                            Console.WriteLine("İsim            : " + item.Ad);
+                            Console.WriteLine("Soyisim         : " + item.Soyad);
+                            Console.WriteLine("Öğrenci numarası: " + item.OgrenciNo);
+                            Console.WriteLine("-");
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Aradığınız kişi kayıtlı değil.");
+                            break;
+                        }
+                    }
+                }
+            }
         }
-        public static void Clr()
+        private static string sifreliYaz()
+        {
+            string sifre = "";
+            do
+            {
+                ConsoleKeyInfo key = Console.ReadKey(true);
+
+                if (key.Key != ConsoleKey.Backspace && key.Key != ConsoleKey.Enter)
+                {
+                    sifre += key.KeyChar;
+                    Console.Write("*");
+                }
+                else
+                {
+                    if (key.Key == ConsoleKey.Backspace && sifre.Length >0)
+                    {
+                        sifre = sifre.Substring(0, sifre.Length - 1);
+                        Console.Write("\b \b");
+                    }
+                    else if (key.Key == ConsoleKey.Enter)
+                    {
+                        break;
+                    }
+                }
+            } while (true);
+            return sifre;
+        }
+        public static void Clr()  
         {
             Console.Clear();
         }
